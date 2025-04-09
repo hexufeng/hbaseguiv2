@@ -30,7 +30,7 @@ flutter build macos --release
 ``
 ## make dmg file
 ``
-brew install create-dmg
+brew install create-dmg &
 create-dmg hbaseguiv2.app
 ``
 
