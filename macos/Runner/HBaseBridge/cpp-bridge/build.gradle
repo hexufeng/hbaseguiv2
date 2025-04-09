@@ -1,0 +1,54 @@
+plugins {
+    id 'cpp-library'
+}
+
+library {
+    binaries.configureEach { binary ->
+        def javaHome = System.getenv("JAVA_HOME")
+        if (javaHome == null) {
+            throw new GradleException("JAVA_HOME environment variable is not set")
+        }
+        
+        def os = System.getProperty("os.name").toLowerCase()
+        def jniIncludePath = "${javaHome}/include"
+        def jniPlatformPath = os.contains("mac") ? "${javaHome}/include/darwin" :
+                             os.contains("windows") ? "${javaHome}/include/win32" :
+                             "${javaHome}/include/linux"
+        
+        compileTask.get().compilerArgs.addAll([
+            "-I", jniIncludePath,
+            "-I", jniPlatformPath
+        ])
+        
+        if (os.contains("mac")) {
+            compileTask.get().compilerArgs.addAll([
+                "-std=c++11",
+                "-fPIC"
+            ])
+            linkTask.get().linkerArgs.addAll([
+                "-dynamiclib",
+                "-framework", "JavaVM"
+            ])
+        }
+    }
+}
+
+library.baseName = "hbase_bridge"
+
+tasks.register('generateExportedSymbols') {
+    doLast {
+        new File('exported_symbols.txt').text = '''
+_initJVM
+_connect
+_getTables
+_getTableData
+'''
+    }
+}
+
+tasks.register('copyLib', Copy) {
+    from "${buildDir}/lib/main/debug/libhbase_bridge.dylib"
+    from "${buildDir}/lib/main/release/libhbase_bridge.dylib"
+    into '../../Frameworks'
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}

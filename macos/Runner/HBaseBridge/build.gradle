@@ -1,0 +1,22 @@
+// 根项目配置
+plugins {
+    id 'base'
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
+task buildAll {
+    dependsOn ':java-bridge:build'
+    dependsOn ':cpp-bridge:copyLib'
+}
+
+task copyLibs(type: Copy) {
+    from project(':cpp-bridge').buildDir.path + '/lib/main/release/libhbase_bridge.dylib'
+    into '../../Frameworks'
+}
+
+buildAll.finalizedBy(copyLibs) 

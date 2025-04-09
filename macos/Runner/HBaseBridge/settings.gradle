@@ -1,0 +1,3 @@
+rootProject.name = 'hbase_bridge'
+include 'java-bridge'
+include 'cpp-bridge' 
