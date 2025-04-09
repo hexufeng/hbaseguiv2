@@ -21,9 +21,7 @@ this is an macos desktop hbase gui client !
 ## How to use ?
 ``
 git clone https://github.com/hexufeng/hbaseguiv2.git
-
 cd hbaseguiv2
-
 flutter run -d macos
 ``
 ## release
